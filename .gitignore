@@ -1,0 +1,7 @@
+ebin
+deps
+*.beam
+logs
+Mnesia.nonode@nohost
+erl_crash.dump
+.leptus.plt

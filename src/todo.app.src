@@ -1,0 +1,12 @@
+{application, todo,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { todo_app, []}},
+  {env, []}
+ ]}.

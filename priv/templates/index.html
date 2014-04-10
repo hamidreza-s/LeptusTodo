@@ -1,0 +1,43 @@
+<html>
+<head>
+	<title>{{ title }}</title>
+   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+   <script>
+      $(function(){
+         
+         var $form = $("#todo-form");
+         $form.on('submit', function(event){
+            event.preventDefault();
+            var data = $form.serializeArray();
+            $.post("http://localhost:8080/todo", data)
+               .done(function(data){
+                  console.log(data);
+               });
+         });
+      });
+   </script>
+</head>
+<body>
+	<div>
+		<p>Welcome to Leptus Todo List</p>
+      <form id="todo-form">
+         
+         <label>ID</label><br/>
+         <input type="text" name="id"/><br/>
+         
+         <label>Content</label><br/>
+         <input type="text" name="content"/><br/>
+         
+         <label>Priority</label><br/>
+         <input type="text" name="priority"/><br/>
+         
+         <label>Status</label><br/>
+         <input type="text" name="status"/><br/>
+         
+         <br/>
+         <button type="submit">Save</button>
+
+      </form>
+	</div>
+</body>
+</html>
