@@ -19,7 +19,7 @@ start(_StartType, _StartArgs) ->
 	mnesia:create_table(todo, [{attributes, record_info(fields, todo)}]),
 
 	%% leptus
-	leptus:start_http([{handlers, [{todo_handler, state}]}]),
+	leptus:start_listener(http, [{'_', [{todo_handler, undef}]}]),
 
 	%% dtl
 	application:start(dtl),

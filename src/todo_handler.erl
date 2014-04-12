@@ -3,7 +3,7 @@
 
 %% leptus callbacks
 -export([init/3]).
--export([terminate/3]).
+-export([terminate/4]).
 
 %% leptus routes
 -export([get/3]).
@@ -48,5 +48,5 @@ delete("/todo/:id", _Req, State) ->
 	{200, {json, [{<<"delete">>,<<"todo">>}]}, State}.
 
 %% End
-terminate(_Reason, _Req, _State) ->
+terminate(_Reason, _Route, _Req, _State) ->
 	ok.

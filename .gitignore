@@ -1,6 +1,7 @@
 ebin
 deps
 *.beam
+*.swp
 logs
 Mnesia.nonode@nohost
 erl_crash.dump
