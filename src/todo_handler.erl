@@ -30,22 +30,30 @@ get("/", _Req, State) ->
 
 %% List
 get("/todos", _Req, State) ->
-   Query = fun() ->
-      qlc:e(
-         qlc:q(
-            [X || X <- mnesia:table(todo)]
-         )
-      )
-   end,
-   {atomic, Records} = mnesia:transaction(Query),
-
-   io:format("Todo lists: ~p~n", [Records]),
-
-	{200, {json, [{<<"get">>,<<"todos">>}]}, State};
+	Query = fun() ->
+  	qlc:e(
+			qlc:q(
+				[X || X <- mnesia:table(todo)]
+			)
+		)
+	end,
+	
+	{atomic, Records} = mnesia:transaction(Query),
+	Json = todo_helper:format(Records),
+	
+	{200, {json, Json}, State};
 
 %% Retrieve
-get("/todo/:id", _Req, State) ->
-	{200, {json, [{<<"get">>,<<"todo">>}]}, State}.
+get("/todo/:id", Req, State) ->
+
+	Id = leptus_req:param(Req, id),
+	Query = fun() ->
+		mnesia:read(todo, Id)
+	end,
+	{atomic, Record} = mnesia:transaction(Query),
+	Json = todo_helper:format(Record),
+
+	{200, {json, Json}, State}.
 
 %% Create
 post("/todo", Req, State) ->
