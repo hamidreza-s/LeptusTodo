@@ -11,8 +11,9 @@
 -export([put/3]).
 -export([delete/3]).
 
-%% record
+%% includes
 -include("todo_record.hrl").
+-include_lib("stdlib/include/qlc.hrl").
 
 %% @todo: add static route
 
@@ -29,6 +30,17 @@ get("/", _Req, State) ->
 
 %% List
 get("/todos", _Req, State) ->
+   Query = fun() ->
+      qlc:e(
+         qlc:q(
+            [X || X <- mnesia:table(todo)]
+         )
+      )
+   end,
+   {atomic, Records} = mnesia:transaction(Query),
+
+   io:format("Todo lists: ~p~n", [Records]),
+
 	{200, {json, [{<<"get">>,<<"todos">>}]}, State};
 
 %% Retrieve
@@ -40,7 +52,13 @@ post("/todo", Req, State) ->
 	Post = leptus_req:body_qs(Req),
 	io:format("post: ~p~n", [Post]),
 
-	{<<"id">>, Id} = lists:keyfind(<<"id">>, 1, Post),
+   {MegaS, S, MicroS} = erlang:now(),
+   Id = list_to_binary(
+      integer_to_list(MegaS) ++
+      integer_to_list(S) ++
+      integer_to_list(MicroS)
+   ),
+
 	{<<"content">>, Content} = lists:keyfind(<<"content">>, 1, Post),
 	{<<"priority">>, Priority} = lists:keyfind(<<"priority">>, 1, Post),
 	{<<"status">>, Status} = lists:keyfind(<<"status">>, 1, Post),
