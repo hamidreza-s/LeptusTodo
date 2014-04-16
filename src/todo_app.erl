@@ -13,22 +13,19 @@
 
 start(_StartType, _StartArgs) ->
 
-	%% mnesia
-	mnesia:create_schema([node()]),
-	mnesia:start(),
-	mnesia:create_table(todo, [
-		{attributes, record_info(fields, todo)},
-		{disc_copies, [node()]}
-	]),
+   %% mnesia
+   mnesia:create_schema([node()]),
+   mnesia:start(),
+   mnesia:create_table(todo, [
+      {attributes, record_info(fields, todo)},
+      {disc_copies, [node()]}
+   ]),
 
-	%% leptus
-	leptus:start_listener(http, [{'_', [{todo_handler, undef}]}]),
+   %% dtl
+   application:start(dtl),
 
-	%% dtl
-	application:start(dtl),
-
-	%% supervisor
-	todo_sup:start_link().
+   %% leptus
+   leptus:start_listener(http, [{'_', [{todo_handler, undef}]}]).
 
 stop(_State) ->
-	ok.
+   ok.

@@ -1,6 +1,6 @@
 -record(todo, {
-	id,
-	content,
-	priority,
-	status
+   id,
+   content,
+   priority,
+   status
 }).

@@ -7,4 +7,4 @@ format([], Results) -> Results;
 format([H|T], Results) -> format(T, [json(H)|Results]).
 
 json({_, Key, Content, Priority, Status}) ->
-	{Key, [Content, Priority, Status]}.
+   {Key, [Content, Priority, Status]}.
