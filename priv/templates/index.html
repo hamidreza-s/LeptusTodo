@@ -9,6 +9,7 @@
    <script>
       $(function(){
          
+         // Initialize variables
          var todoList = {};
          var $todoList = $("#todo-list");
          var $todoTpl = $("#todos-tpl");
@@ -18,31 +19,34 @@
          var $todoPriority = $("#todo-priority");
          var $todoStatus = $("#todo-status");
          var todoRender = _.template($todoTpl.html());
-
+         
+         // List todos
          $todoList.on('fetch reset', function(){
-            $.get("http://localhost:8080/todos")
+            $.get("/todos")
                .done(function(data){
                   todoList = data;
                   $todoList.html(todoRender({todos: data}));
                });
          });
 
+         // Clear form
          $todoForm.on('clear', function(){
             $todoId.val('');
             $todoContent.val('');
             todoList = {};
          });
 
+         // Create or Update
          $todoForm.on('submit', function(event){
             event.preventDefault();
             var data = $todoForm.serializeArray();
 
             if($todoId.val() == ''){ 
-               $.post("http://localhost:8080/todo", data);
+               $.post("/todo", data);
             }else{
                console.log(data);
                $.ajax({
-                  url: "http://localhost:8080/todo/" + data[0].value,
+                  url: "/todo/" + data[0].value,
                   type: 'put',
                   data: data
                });
@@ -52,10 +56,11 @@
             $todoForm.trigger('clear');
          });
 
+         // Delete
          $todoList.on('click', '.delete-todo', function(){
             var id = $(this).parents("li").attr("todo-id");
             $.ajax({
-               url: 'http://localhost:8080/todo/'+id,
+               url: '/todo/'+id,
                type: 'delete'
             }).done(function(data){
                console.log(data);
@@ -64,6 +69,7 @@
             });
          });
 
+         // Populate form with an existing todo for edit
          $todoList.on('click', '.edit-todo', function(){
             var id = $(this).parents("li").attr("todo-id");
             $todoId.val(id);
@@ -72,6 +78,7 @@
             $todoStatus.val(todoList[id][2]);
          });
 
+         // Start!
          $todoList.trigger('fetch');
 
       });
@@ -96,14 +103,11 @@
    <div class="">
       <p>Welcome to Leptus Todo List</p>
       <form id="todo-form">
-         
          <input type="hidden" name="id" id="todo-id"/>
-
          <label>Content</label>
          <div>
             <textarea id="todo-content" name="content"></textarea>
-         </div>
-         
+         </div>        
          <label>Priority</label>
          <div>
             <select id="todo-priority" name="priority">
@@ -111,8 +115,7 @@
                <option value="Medium">Medium</option>
                <option value="High">High</option>
             </select>
-         </div>
-         
+         </div>        
          <label>Status</label>
          <div>
             <select id="todo-status" name="status">
@@ -120,13 +123,11 @@
                <option value="Done">Done</option>
             </select>
          </div>
-
          <br/>
          <div><button type="submit">Save</button></div>
-
       </form>
    </div>
-   <div id="todo-list" class="">
+   <div id="todo-list">
 
    </div>
 </body>

@@ -1,21 +1,25 @@
 -module(todo_handler).
 -compile({parse_transform, leptus_pt}).
 
-%% leptus callbacks
+%% Leptus callbacks
 -export([init/3]).
+-export([cross_domains/3]).
 -export([terminate/4]).
 
-%% leptus routes
+%% Leptus routes
 -export([get/3]).
 -export([post/3]).
 -export([put/3]).
 -export([delete/3]).
 
-%% includes
+%% Includes
 -include("todo_record.hrl").
 -include_lib("stdlib/include/qlc.hrl").
 
-%% @todo: add static route
+%% Cross Domain Origin
+%% It accepts any host for cross-domain requests
+cross_domains(_Route, _Req, State) ->
+   {['_'], State}.
 
 %% Start
 init(_Route, _Req, State) ->
@@ -34,26 +38,41 @@ get("/todos", _Req, State) ->
 
 %% Retrieve
 get("/todo/:id", Req, State) ->
+   %% Get ID from query string
    Id = leptus_req:param(Req, id),
+   
+   %% Fetch record from database
    Query = fun() ->
       mnesia:read(todo, Id)
    end,
    {atomic, Record} = mnesia:transaction(Query),
+   
+   %% Format record to JSON
    Json = todo_helper:format(Record),
+   
+   %% Return JSON formated data
+   %% with success (200) HTTP status code
    {200, {json, Json}, State}.
 
 %% Create
 post("/todo", Req, State) ->
+   %% Get POST body query string
    Post = leptus_req:body_qs(Req),
+   
+   %% Create record ID based on timestamp
    {MegaS, S, MicroS} = erlang:now(),
    Id = list_to_binary(
       integer_to_list(MegaS) ++
       integer_to_list(S) ++
       integer_to_list(MicroS)
    ),
+   
+   %% Get desired fields from POST
    {<<"content">>, Content} = lists:keyfind(<<"content">>, 1, Post),
    {<<"priority">>, Priority} = lists:keyfind(<<"priority">>, 1, Post),
    {<<"status">>, Status} = lists:keyfind(<<"status">>, 1, Post),
+   
+   %% Write new record in database
    Write = fun() ->
       Todo = #todo{
          id = Id,
@@ -64,6 +83,8 @@ post("/todo", Req, State) ->
       mnesia:write(Todo)
    end,
    mnesia:transaction(Write),
+   
+   %% Return success
    {200, {json, Post}, State}.
 
 %% Update

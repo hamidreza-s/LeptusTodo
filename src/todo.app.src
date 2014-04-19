@@ -1,7 +1,7 @@
 {application, todo,
  [
-  {description, ""},
-  {vsn, "1"},
+  {description, "A simple todo application"},
+  {vsn, "1"}, %% version
   {registered, []},
   {applications, [
                   kernel,
