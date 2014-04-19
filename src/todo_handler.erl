@@ -21,13 +21,6 @@
 init(_Route, _Req, State) ->
    {ok, State}.
 
-%% Main
-get("/", _Req, State) ->
-   {ok, Body} = dtl:render("index.html", [
-      {title, <<"Todo List">>}
-   ]),
-   {200, {html, Body}, State};
-
 %% List
 get("/todos", _Req, State) ->
    Query = fun() ->

@@ -21,11 +21,9 @@ start(_StartType, _StartArgs) ->
       {disc_copies, [node()]}
    ]),
 
-   %% dtl
-   application:start(dtl),
-
    %% leptus
-   leptus:start_listener(http, [{'_', [{todo_handler, undef}]}]).
+   Opts = [{static_dir, {'_', {priv_dir, ?MODULE, "templates"}}}],
+   leptus:start_listener(http, [{'_', [{todo_handler, undef}]}], Opts).
 
 stop(_State) ->
    ok.
